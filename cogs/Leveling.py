@@ -29,7 +29,7 @@ class Leveling(commands.Cog):
     async def rank(self, ctx, user : discord.User):
         #gets avatar profile picture
         r = requests.get(user.avatar)
-  
+
         #saves profile picture to current directory
         with open("assets/profilepicture.png", "wb") as f:
             f.write(r.content)
@@ -52,20 +52,6 @@ class Leveling(commands.Cog):
         if isinstance(error, commands.MissingRequiredArgument):
             await self.rank(ctx, ctx.author)
             #await ctx.send(message, delete_after=5)
-
-    @commands.command(name = "asay")
-    async def say(self, ctx, msg):
-        #channel = self.client.get_channel(910287456182603836)
-        channel = self.client.get_channel(910287456182603836)
-        #troubleShootingChannel = self.client.get_channel(867340695723311135)
-
-        #await ctx.send(str(channel))
-        #msg = await channel.fetch_message(925888009977614486)
-        #users = await msg.reactions[0].users().flatten()
-        #users.remove(self.client.get_user(921913569132564491))
-        #await ctx.send(f"Congratulations {random.choice(users).mention}, you have won the giveaway for: ")
-        await channel.send(f"Congratulations {self.client.get_user(819702929115447327).mention}, you have won the giveaway for: ")
-        #await ctx.send(msg)
 
 
     @commands.Cog.listener()
@@ -139,16 +125,23 @@ class Leveling(commands.Cog):
 
             updateLevelsFile(data)
     
-    @commands.command(aliases = ["ranktop, leveltop", "top", "leaderboard"])
-    async def ranktop(self, ctx):
+    @commands.command(aliases = ["leaderboard", "ranktop, leveltop", "top"])
+    async def ranktop(self, ctx, page):
 
+        #opens json file
         with open("levels.json") as f:
             data = json.load(f)
 
+        #standard insertion sort algo, modified to work with the data dictionary list
+        #for each number in the list (ignoring the first one), copy it to a variable 
         for i in range(1,len(data['data'])):
             itemToInsert = data['data'][i]
             j = i-1
 
+            #checks the number with all the numbers behind it
+            #if the number is larger than a number before it
+            #all the numbers are moved over one index,
+            #and the number is inserted in the right place
             while j>=0 and itemToInsert['level']>data['data'][j]['level']:
                 data['data'][j+1] = data['data'][j]
                 j-=1
@@ -156,15 +149,29 @@ class Leveling(commands.Cog):
             data['data'][j+1] = itemToInsert
 
 
+        #gets 10 results in order, depending on what page is selected by the user
         content = ""
-        for c in range(10):
-            #await ctx.send(f"{c}. {client.get_user(data['data'][c]['user'])} {data['data'][c]['level']}")
+
+        #shows users in groups of 10 depending on what page theyre on
+        #loops for 10 users, starting on the user at the start of the next "page"
+        pageIndex = (page-1)*10
+        for c in range(pageIndex,pageIndex + 9):
+            
+            #adds a user to a string
             content += f"{c+1}. {self.client.get_user(data['data'][c]['user'])} {data['data'][c]['level']}\n"
 
-        embedvar=discord.Embed(title="Aevitas Leaderboard", description=content, color=0xc368eb)
+        #sends an embed with the list of users generated in "content"
+        embedvar=discord.Embed(title=f"Aevitas Leaderboard | Page {page}", description=content, color=0xc368eb)
         await ctx.send(embed = embedvar)
 
         updateLevelsFile(data)
+
+    #error catching for "ranktop" function
+    @ranktop.error
+    async def ranktopError(self, ctx: commands.Context, error: commands.CommandError):
+        if isinstance(error, commands.MissingRequiredArgument):
+            await self.ranktop(ctx, 1)
+        
 
 
 def setup(client):
