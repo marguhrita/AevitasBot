@@ -7,20 +7,23 @@ class Admin(commands.Cog):
         self.client = client
         
 
+    #reloads ONE cog in 
     @commands.command(name = "reloadcog", hidden = True)
     @commands.has_permissions(administrator = True)
     async def reloadcog(self, ctx, cog):
+
         try:
             await ctx.send("unloading cog..")
             self.client.unload_extension(f"cogs.{cog}")
             await ctx.send("loading cog..")
             self.client.load_extension(f"cogs.{cog}")
+            await ctx.send(f"Cog {cog} succesfully loaded!")
 
         except Exception as e:
             await ctx.send(f"{e.__class__.__name__}: {e}")
 
-
-    @commands.command(name = "reload", hidden = True)
+    #reloads ALL cogs
+    @commands.command(name = "reloadall", hidden = True)
     @commands.has_permissions(administrator = True)
     async def reload(self, ctx):
         async with ctx.typing():
@@ -47,7 +50,7 @@ class Admin(commands.Cog):
                 )
             await ctx.send(embed=embed)
 
-
+    #checks if a cog is loaded
     @commands.command(name = "loaded",  hidden = True)
     @commands.has_permissions(administrator = True)
     async def showLoaded(self, ctx, cog: str):
@@ -61,6 +64,8 @@ class Admin(commands.Cog):
             await ctx.send("Cog is unloaded")
             self.client.unload_extension(f"cogs.{cog}")
 
+
+    #loads one cog in particular    
     @commands.command(name = "loadcog", hidden = True)
     @commands.has_permissions(administrator = True)
     async def loadCog(self, ctx, cog : str):
@@ -70,19 +75,23 @@ class Admin(commands.Cog):
             await ctx.send("Cog already loaded")
         except commands.ExtensionNotFound:
             await ctx.send("Cog not found")
-        else: await ctx.send("idfk whats happened to the cog")
+        else: await ctx.send("idk whats happened to the cog")
         
 
+    #tries to load all cogs in cogs directory
     @commands.command(name = "loadallcogs", hidden = True)
     @commands.has_permissions(administrator = True)
     async def loadAllCogs(self, ctx):
         for extension in os.listdir("./cogs/"):
-            print("loading cogs..")
-            if extension.endswith(".py"):
-                self.client.load_extension(f"cogs.{extension[:-3]}")
+            try:
+                if extension.endswith(".py"):
+                    self.client.load_extension(f"cogs.{extension[:-3]}")
+            except Exception as e:
+                await ctx.send(f"{extension[:-3]} failed to load")
+                
 
 
-
+    #tells you if discord is down
     @commands.command(name="isdiscorddown")
     async def isDiscordDown(self, ctx):
         await ctx.send("No, its not")
