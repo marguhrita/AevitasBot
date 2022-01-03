@@ -4,15 +4,14 @@ import discord, asyncio
 from discord.ui import Button
 from discord.ui.view import View
 
-
+#creates view object to create buttons
 class SuggestionMessage(discord.ui.View):
         def __init__(self):
             super().__init__(timeout=None)
             self.createSuggestion = None
-            self.sent = None
             self.user = None
             
-        
+    
         @discord.ui.button(label = "Create Suggestion", style = discord.ButtonStyle.green)
         async def confirm(self, button: discord.ui.Button, interaction: discord.Interaction):
             await interaction.response.send_message("Please type your suggestion in the chat below", ephemeral=True)

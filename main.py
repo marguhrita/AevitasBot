@@ -27,37 +27,6 @@ client = commands.Bot(command_prefix='#', intents = intents, activity=discord.Ga
 client.huh = "yuh"
 
 
-#functions
-
-
-def userInLevelsFile(data, userid):
-  if userid in [x['user'] for x in data['data']]:
-    return True
-  else: return False
-
-def addUserToLevelsFile(data, userid, xp, lastmessage, level):
-  data['data'].append({"user":userid, "totalxp":xp, "lastmessage":lastmessage, "level":level})
-  return data
-
-def updateLevelsFile(data):
-  with open ("levels.json", "w") as g:
-    json.dump(data, g)
-
-
-@client.command()
-async def stream(ctx):
-  await client.change_presence(activity=discord.Streaming(name="yuh", url="https://twitch.tv/aevitas"))
-  
-
-@client.command(name="avatar", aliases = ["pfp"])
-async def getAvatar(ctx):
-  
-  avatarUrl = ctx.author.avatar
-  await ctx.send(avatarUrl)
-
-
-
-
 @client.event
 async def on_ready():
     print('We have logged in as {0.user}'.format(client))
