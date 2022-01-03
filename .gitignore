@@ -1,6 +1,9 @@
 /token.txt
 /levels.json
-
 /assets/profilePicture.png
 /assets/levelcard.png
 /cogs/_pycache_/
+/giveaway.txt
+/cogs/__pycache__
+__pycache__
+.vscode
