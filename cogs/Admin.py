@@ -17,7 +17,7 @@ class Admin(commands.Cog):
             self.client.unload_extension(f"cogs.{cog}")
             await ctx.send("loading cog..")
             self.client.load_extension(f"cogs.{cog}")
-            await ctx.send(f"Cog {cog} succesfully loaded!")
+            await ctx.send(f"Cog {cog} succesfully reloaded!")
 
         except Exception as e:
             await ctx.send(f"{e.__class__.__name__}: {e}")
