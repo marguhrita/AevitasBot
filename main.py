@@ -4,11 +4,7 @@
 ##from discord.interactions import Interaction
 from discord.activity import CustomActivity
 from discord.ext import commands
-import json, time, random, discord, requests, datetime
-import asyncio, os
-
-
-BLWords = ["nigger", "retard", "nigga", "卐", "faggot", "freetard", ".discord.gg", "discordapp.com/invite", "discord.me", "fag"]
+import discord, os
 
 
 intents = discord.Intents.all()
@@ -31,9 +27,6 @@ client.huh = "yuh"
 async def on_ready():
     print('We have logged in as {0.user}'.format(client))
 
-@client.event
-async def on_member_join(member):
-    return
 
 @client.event
 async def on_member_update(before, after):
@@ -44,23 +37,8 @@ async def on_member_update(before, after):
 
 @client.event
 async def on_message(message):
-  if message.author == client.user or message.author.bot or message.author == client.get_user(867339991847403550):
-    return
 
-  troubleShootingChannel = client.get_channel(867340695723311135)
-  #loop for each word in "BLWords" list
-  for word in BLWords:
-
-    #deletes message if the word is found inside the message
-    if word in message.content.lower():
-      print("Blacklisted word found")
-      await message.delete()
-
-      #sends a private warning message to the sender of the message 
-      await message.author.send(f"Langauge such as {word} is not permitted in the Aevitas server")
   
-  
-
   #allows us to use commands as well as the on_message event
   await client.process_commands(message)
 
