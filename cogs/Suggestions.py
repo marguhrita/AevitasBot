@@ -30,9 +30,20 @@ class SuggestionMessage(discord.ui.View):
 class Suggestions(commands.Cog):
     def __init__(self, client):
         self.client = client
+    
+    async def messagePermsOn(self, ctx, user : discord.User):
+
+        channel = ctx.channel
+        await channel.edit(overwrites={user: discord.PermissionOverwrite(send_messages=True)})
         
-    
-    
+
+
+    async def messagePermsOff(self, ctx, user : discord.User):
+        channel = ctx.channel
+        await channel.edit(overwrites={user: discord.PermissionOverwrite(send_messages=False)})
+        
+
+
     async def createSuggestion(self, ctx):
         
         view = SuggestionMessage()
@@ -41,23 +52,29 @@ class Suggestions(commands.Cog):
         await view.wait()
 
         if view.createSuggestion:
-            perms = ctx.channel.overwrites_for(view.user)
-            perms.send_messages = True
+
+            
+            await self.messagePermsOn(ctx, view.user)
+            
+
             try:
                 
-                msg = await self.client.wait_for("message", timeout = 300, check = lambda message: message.author == view.user and message.channel == ctx.channel)
+                msg = await self.client.wait_for("message", timeout = 5, check = lambda message: message.author == view.user and message.channel == ctx.channel)
                 embedVar = discord.Embed(description=msg.content, color = 0xf6b9f2)
                 embedVar.set_author(name = view.user.name, icon_url = view.user.avatar)
                 await msg.delete()
                 sentSuggestion = await ctx.send(embed = embedVar)
+                await self.messagePermsOff(ctx, view.user)
                 
             
             except asyncio.TimeoutError:
-                await ctx.send("Sorry, you timed out! Please create another suggestion")
-            
+                await ctx.send("Sorry, you timed out! Please create another suggestion", delete_after = 15)
+                await self.messagePermsOff(ctx, view.user)
+                await self.createSuggestion(ctx)
+                
 
             
-            perms.send_messages = True
+            
             await suggestionEmbed.delete()
             
             await sentSuggestion.add_reaction(self.client.get_emoji(922219274544762901))
