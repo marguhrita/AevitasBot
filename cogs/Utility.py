@@ -15,5 +15,11 @@ class Utility(commands.Cog):
         avatarUrl = ctx.author.avatar
         await ctx.send(avatarUrl)
 
+    @commands.command(name = "msg", hidden = True)
+    @commands.has_permissions(administrator = True)
+    async def privateMessage(self, ctx, user:discord.User, message):
+        await user.send(message)
+
+
 def setup(client):
     client.add_cog(Utility(client))
