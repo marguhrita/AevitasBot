@@ -92,9 +92,9 @@ class Admin(commands.Cog):
 
 
     #tells you if discord is down
-    @commands.command(name="isdiscorddown")
-    async def isDiscordDown(self, ctx):
-        await ctx.send("No, its not")
+    @commands.command(name="reply")
+    async def isDiscordDown(self, ctx, message):
+        await ctx.send(message)
 
     
 
